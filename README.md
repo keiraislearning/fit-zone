@@ -10,7 +10,7 @@ Jawab = Menurut saya, lebih baik JSON dikarenakan ringan sehingga lebih cepat di
 Jawab = Method tersebut penting karena berfungsi untuk ngecek apakah data yang dikirim user sesuai aturan form. Sehingga data yang masuk database bersih dan sesuai format, hal ini juga mengurangi error karena data tidak sesuai.
 
 4. Mengapa kita membutuhkan csrf_token saat membuat form di Django? Apa yang dapat terjadi jika kita tidak menambahkan csrf_token pada form Django? Bagaimana hal tersebut dapat dimanfaatkan oleh penyerang?
-Jawab = Fungsi csrf_token dalam pembuatan form adalah untuk mencegah serangan berbahaya. Tanpa token ini, memungkinkan pihak luar untuk melakukan tindakan berbahaya atas nama pengguna selain itu permintaan dapat ditolak oleh server. Dengan token ini, django bisa verifikasi kalau request itu beneran dari website kita sendiri.
+Jawab = Fungsi csrf_token dalam pembuatan form adalah untuk mencegah serangan berbahaya. Tanpa token ini, memungkinkan pihak luar untuk melakukan tindakan berbahaya atas nama pengguna selain itu permintaan dapat ditolak oleh server. Dengan token ini, django bisa terverifikasi kalau request itu beneran dari website kita sendiri.
 
 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
 Jawab = Pertama, membuat form FitForm di forms.py yang terhubung ke model.py. Kedua, membuat views di views.py untuk menampilkan daftar produk, tambah produk, lihat detail produk, dan menampilkan data XML/JSON. Ketiga, membuat URL routing di urls.py. Keempat, membuat tampilannya di bagian templates, untuk daftar produk, tambah produk, dan tampilan detail produk. Kelima, mengecek semua fitur di localhost untuk melihat apakah ada error.
