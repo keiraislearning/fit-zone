@@ -1,9 +1,46 @@
-<h1>Fit Zone!</h1>
-<h5>Kita Jualan </h5>
-<p>Celana sport, sepatu, dan masih banyak lagi</p>
-<h5>Nama: </h5>
-<p>Keira Nuzahra Anjani</p>
+{% extends 'base.html' %}
+{% block content %}
+<h1>FitZone!</h1>
+
 <h5>NPM: </h5>
 <p>2406423282</p>
-<h5>Kelas: </h5>
-<p>PBP D</p>
+
+<h5>Name:</h5>
+<p>Keira Nuzahra Anjani</p>
+
+<h5>Class:</h5>
+<p>D</p>
+
+<a href="{% url 'main:create_produk' %}">
+  <button>+ Tambah Produk</button>
+</a>
+
+<hr>
+
+{% if not fit_list %}
+<p>Belum ada produk dalam toko FitZone.</p>
+{% else %}
+
+{% for produk in fit_list %}
+<div>
+  <h2><a href="{% url 'main:show_produk' produk.id %}">{{ produk.name }}</a></h2>
+
+  <p><b>{{ produk.get_category_display }}</b> 
+    {% if produk.views > 20 %} | <b>Hot</b>{% endif %} 
+    | Dilihat: {{ produk.views }}</p>
+
+  {% if produk.thumbnail %}
+  <img src="{{ produk.thumbnail }}" alt="thumbnail" width="150" height="100">
+  <br />
+  {% endif %}
+
+  <p>{{ produk.description|truncatewords:25 }}...</p>
+
+  <p><a href="{% url 'main:show_produk' produk.id %}"><button>Baca selengkapnya</button></a></p>
+</div>
+
+<hr>
+{% endfor %}
+
+{% endif %}
+{% endblock content %}

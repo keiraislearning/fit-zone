@@ -39,6 +39,10 @@ ALLOWED_HOSTS = [
     ".pbp.cs.ui.ac.id"
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://keira-nuzahra-fitzone.pbp.cs.ui.ac.id/"
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -66,7 +70,7 @@ ROOT_URLCONF = 'fit_zone.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
