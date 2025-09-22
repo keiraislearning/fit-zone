@@ -40,7 +40,7 @@ ALLOWED_HOSTS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://keira-nuzahra-fitzone.pbp.cs.ui.ac.id/"
+    "https://keira-nuzahra-fitzone.pbp.cs.ui.ac.id"
 ]
 
 # Application definition

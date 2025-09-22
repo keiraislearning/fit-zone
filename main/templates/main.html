@@ -9,7 +9,11 @@
 <p>Keira Nuzahra Anjani</p>
 
 <h5>Class:</h5>
-<p>D</p>
+<p>PBP D</p>
+
+<h5>
+  Selamat Datang ke FitZone!
+</h5>
 
 <a href="{% url 'main:create_produk' %}">
   <button>+ Tambah Produk</button>
@@ -31,7 +35,7 @@
 <hr>
 
 {% if not fit_list %}
-<p>Belum ada produk dlm toko FitZone.</p>
+<p>Belum ada produk dalam toko FitZone.</p>
 {% else %}
 
 {% for produk in fit_list %}
