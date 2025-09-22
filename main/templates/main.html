@@ -15,6 +15,19 @@
   <button>+ Tambah Produk</button>
 </a>
 
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+
+<a href="?filter=all">
+  <button type="button">Semua Produk</button>
+</a>
+<a href="?filter=my">
+  <button type="button">Produk Saya</button>
+</a> 
+
 <hr>
 
 {% if not fit_list %}

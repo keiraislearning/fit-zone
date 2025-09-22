@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<p><a href="{% url 'main:show_main' %}"><button>← Kembali ke Tokot</button></a></p>
+<p><a href="{% url 'main:show_main' %}"><button>← Kembali ke Toko</button></a></p>
 
 <h1>{{ produk.name }}</h1>
 
@@ -14,5 +14,12 @@
 {% endif %}
 
 <p>{{ Fit.content }}</p>
+
+{% if news.user %}
+    <p>Penjual: {{ news.user.username }}</p>
+{% else %}
+    <p>Penjual: Anonymous</p>
+{% endif %}
+
 
 {% endblock content %}
