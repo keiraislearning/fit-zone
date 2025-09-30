@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>{{ product.name }} - Product Detail</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="bg-gray-50 w-full min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      
+      <!-- Product Image -->
+      <div class="space-y-6">
+        {% if product.thumbnail %}
+          <img src="{{ product.thumbnail }}" 
+               alt="{{ product.name }}" 
+               class="w-full h-auto object-contain rounded-lg border border-gray-200">
+        {% else %}
+          <div class="w-full h-96 bg-gray-100 flex items-center justify-center text-gray-400 text-sm rounded-lg">
+            No Image Available
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Product Info -->
+      <div class="flex flex-col space-y-6">
+        
+        <!-- Category -->
+        <div>
+          <span class="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-green-600 text-white">
+            {{ product.get_category_display }}
+          </span>
+        </div>
+
+        <!-- Name -->
+        <h1 class="text-3xl font-bold text-gray-900">{{ product.name }}</h1>
+
+        <!-- Price -->
+        <p class="text-2xl font-semibold text-green-700">
+          ${{ product.price }}
+        </p>
+
+        <!-- Description -->
+        <div class="text-gray-700 leading-relaxed text-base">
+          {{ product.description }}
+        </div>
+
+        <!-- Actions -->
+        <a href="{% url 'main:show_main' %}" 
+            class="block w-full bg-gray-800 text-white text-center py-2 rounded-lg hover:bg-gray-900 transition">
+            Back to Homepage
+        </a>
+
+
+        <!-- Seller & Date -->
+        <div class="text-xs text-gray-500 mt-2">
+            <p>{{ product.user.username }}</p>
+            <p>Seller</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

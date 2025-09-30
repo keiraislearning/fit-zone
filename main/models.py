@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 import uuid
 
-class Fit(models.Model):
+class Product(models.Model):
     CATEGORY_CHOICES = [
         ('transfer', 'Transfer'),
         ('update', 'Update'),
@@ -14,7 +14,8 @@ class Fit(models.Model):
         ('analysis', 'Analysis'),
     ]
 
-    name = models.CharField(max_length=255)  
+    name = models.CharField(max_length=255) 
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False) 
     price = models.IntegerField(default=0)  
     description = models.TextField()  
     thumbnail = models.URLField(blank=True, null=True)
@@ -26,9 +27,10 @@ class Fit(models.Model):
         return self.name
     
     @property
-    def is_fit_hot(self):
+    def is_product_hot(self):
         return self.views > 20
         
     def increment_views(self):
         self.views += 1
         self.save()
+

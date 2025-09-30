@@ -7,8 +7,26 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core import serializers
 from django.shortcuts import render, redirect, get_object_or_404
-from main.forms import FitForm
-from main.models import Fit
+from main.forms import ProductForm
+from main.models import Product
+
+def delete_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
+
+def edit_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    form = ProductForm(request.POST or None, instance=product)
+    if form.is_valid() and request.method == 'POST':
+        form.save()
+        return redirect('main:show_main')
+
+    context = {
+        'form': form
+    }
+
+    return render(request, "edit_product.html", context)
 
 def logout_user(request):
     logout(request)
@@ -44,30 +62,30 @@ def register(request):
     context = {'form':form}
     return render(request, 'register.html', context)
 
-def show_xml_by_id(request, produk_id):
+def show_xml_by_id(request, product_id):
    try:
-        fit_item = Fit.objects.filter(pk=produk_id)
-        xml_data = serializers.serialize("xml", fit_item)
+        Product_item = Product.objects.filter(pk=product_id)
+        xml_data = serializers.serialize("xml", Product_item)
         return HttpResponse(xml_data, content_type="application/xml")
-   except Fit.DoesNotExist:
+   except Product.DoesNotExist:
        return HttpResponse(status=404)
 
-def show_json_by_id(request, produk_id):
+def show_json_by_id(request, product_id):
    try:
-       fit_item = Fit.objects.get(pk=produk_id)
-       json_data = serializers.serialize("json", [fit_item])
+       Product_item = Product.objects.get(pk=product_id)
+       json_data = serializers.serialize("json", [Product_item])
        return HttpResponse(json_data, content_type="application/json")
-   except Fit.DoesNotExist:
+   except Product.DoesNotExist:
        return HttpResponse(status=404)
 
 def show_json(request):
-    fit_list = Fit.objects.all()
-    json_data = serializers.serialize("json", fit_list)
+    Product_list = Product.objects.all()
+    json_data = serializers.serialize("json", Product_list)
     return HttpResponse(json_data, content_type="application/json")
 
 def show_xml(request):
-     fit_list = Fit.objects.all()
-     xml_data = serializers.serialize("xml", fit_list)
+     Product_list = Product.objects.all()
+     xml_data = serializers.serialize("xml", Product_list)
      return HttpResponse(xml_data, content_type="application/xml")
 
 @login_required(login_url='/login')
@@ -75,39 +93,39 @@ def show_main(request):
     filter_type = request.GET.get("filter", "all")
 
     if filter_type == "all":
-        fit_list = Fit.objects.all()
+        Product_list = Product.objects.all()
     else:
-        fit_list = Fit.objects.filter(user=request.user)
+        Product_list = Product.objects.filter(user=request.user)
 
     context = {
         'npm' : '2406423282',
         'name': 'Keira Nuzahra Anjani',
         'class': 'PBP D',
-        'fit_list': fit_list,
+        'product_list': Product_list,
         'last_login': request.COOKIES.get('last_login', 'Never')
     }
 
     return render(request, "main.html", context)
 
-def create_produk(request):
-    form = FitForm(request.POST or None)
+def create_product(request):
+    form = ProductForm(request.POST or None)
 
     if form.is_valid() and request.method == "POST":
-        fit_entry = form.save(commit = False)
-        fit_entry.user = request.user
-        fit_entry.save()
+        Product_entry = form.save(commit = False)
+        Product_entry.user = request.user
+        Product_entry.save()
         return redirect('main:show_main')
     
     context = {'form': form}
-    return render(request, "create_produk.html", context)
+    return render(request, "create_product.html", context)
 
 @login_required(login_url='/login')
-def show_produk(request, id):
-    produk = get_object_or_404(Fit, pk=id)
-    produk.increment_views()
+def show_product(request, id):
+    product = get_object_or_404(Product, pk=id)
+    product.increment_views()
 
     context = {
-        'produk': produk
+        'product': product
     }
 
-    return render(request, "produk_detail.html", context)
+    return render(request, "product_detail.html", context)
