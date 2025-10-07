@@ -261,10 +261,7 @@ async function editProductEntry() {
     const form = document.querySelector('#editProductForm');
     
     try {
-        const response = await fetch(`/edit-product-ajax/${productId}/`, {
-            method: "POST",
-            body: new FormData(form),
-        });
+        const response = await fetch(`/product/${productId}/edit`, { method: "POST", body: new FormData(form) });
 
         if (response.ok) {
             form.reset();
@@ -324,9 +321,7 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', async () =
     if (!productToDelete) return;
     
     try {
-        const response = await fetch(`/delete-product-ajax/${productToDelete}/`, {
-            method: "POST",
-        });
+        const response = await fetch(`/product/${productToDelete}/delete`, { method: "POST" });
 
         if (response.ok) {
             hideDeleteModal();
