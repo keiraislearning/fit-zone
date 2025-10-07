@@ -13,7 +13,12 @@
         <p class="text-gray-600">Selamat Datang ke Fit Zone!</p>
       </div>
 
-      <!-- Form Errors Display -->
+      <div id="errorMessage" class="hidden mb-6">
+        <div class="px-4 py-3 rounded-md text-sm border bg-red-50 border-red-200 text-red-700">
+          <span id="errorText"></span>
+        </div>
+      </div>
+
       {% if form.non_field_errors %}
         <div class="mb-6">
           {% for error in form.non_field_errors %}
@@ -38,7 +43,7 @@
         </div>
       {% endif %}
 
-      <form method="POST" action="" class="space-y-6">
+      <form method="POST" action="" id="loginForm" class="space-y-6">
         {% csrf_token %}
         
         <div>
@@ -65,6 +70,7 @@
 
         <button 
           type="submit" 
+          id="submitBtn"
           class="w-full bg-green-600 text-white font-medium py-3 px-4 rounded-md hover:bg-green-700 transition-colors">
           Masuk
         </button>
@@ -102,4 +108,53 @@
     </div>
   </div>
 </div>
+
+<script>
+  const loginForm = document.getElementById('loginForm');
+  const errorMessage = document.getElementById('errorMessage');
+  const errorText = document.getElementById('errorText');
+  const submitBtn = document.getElementById('submitBtn');
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Logging in...';
+    
+    errorMessage.classList.add('hidden');
+    
+    const formData = new FormData(loginForm);
+    
+    try {
+      const response = await fetch("{% url 'main:login' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.status) {
+          showToast('Selamat Datang!', 'Login berhasil! Mengalihkan...', 'success');
+          setTimeout(() => {
+              window.location.href = data.redirect;
+          }, 1000);
+      } else {
+          errorText.textContent = data.message;
+          errorMessage.classList.remove('hidden');
+          showToast('Login Gagal', data.message, 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Masuk';
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      errorText.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+      errorMessage.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Masuk';
+    }
+  });
+</script>
 {% endblock content %}

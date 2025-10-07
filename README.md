@@ -82,3 +82,19 @@ Untuk cara pengimplementasikannya Margin → Border → Padding → Content.
 
 5. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial)!
 => Pertama, saya membuat fungsi menghapus dan mengedit product dalam views.py yang kemudian di routing di urls.py. Lalu saya mulai kustomisasi desain pada template HTML. Diawali dengan halaman login, register, tambah product, edit product, dan detail product. Disini saya mulai menggantinya dengan kode yang disediakan di tutorial tentunya dengan memahami setiap kode juga. kemudian dalam daftar produk akan menampilkan foto dan tulisan tertentu sehingga saya mulai dengan memasukan foto ke dalam folder static/image kemudian untuk bagian card nya saya desain sedemikian mungkin sehingga sesuai dengan desain yg saya inginkan. Desain tidak beda jauh dengan yang ada di tutorial, saya hanya mengganti beberapa hal seperti ukuran kotak per product dll (referensi mengikuti webiste Puma). Kemudian saya tambahkan tombol edit dan hapus di card_product.html yang sudah tersambung ke fungsi yg berada di views.py. Terakhir, saya membuat navbar yang responsif, dimana di desktop tampil penuh, sedangkan di mobile berubah jadi tombol hamburger yang bisa menampilkan menu ketika diklik. Saya ubah dibagian navbar.html menggunakan hidden md:flex untuk menu biar hilang di mobile tapi muncul di desktop, lalu untuk tombol hamburger pakai block md:hidden dan tambahkan sedikit script agar ketika hamburger diklik dia menu lain terlihat.
+
+## Tugas 5
+1. Apa perbedaan antara synchronous request dan asynchronous request?
+=> Synchronous itu proses request–response dijalankan satu per satu. Jadi ketika kita kirim request ke server, browser akan nunggu dulu sampai respon selesai baru bisa lanjut. Sedangkan, kalau asynchronous, request bisa jalan dengan sendirinya, halaman nggak harus ke-reload penuh dan user masih bisa berinteraksi sambil nunggu jawaban dari server.
+
+2. Bagaimana AJAX bekerja di Django (alur request–response)?
+=> Pertama, dari sisi frontend, kita kirim request pakai AJAX kemudian request ini masuk ke Django lewat URL yang udah kita siapkan di urls.py. Django terus jalankan view function, ambil data atau proses sesuatu, lalu balikin respon (biasanya dalam bentuk JSON). Respon JSON ini nanti diolah lagi di JavaScript buat update tampilan di halaman tanpa reload.
+
+3. Apa keuntungan menggunakan AJAX dibandingkan render biasa di Django?
+=> Peningkatan pengalaman pengguna (UX) yang dinamis, kecepatan, dan efisiensi bandwidth karena hanya data yang perlu dikirim, karena AJAX memungkinkan pembaruan bagian halaman web secara asinkron tanpa memuat ulang seluruh halaman.
+
+4. Bagaimana cara memastikan keamanan saat menggunakan AJAX untuk fitur Login dan Register di Django?
+=> Menggunakan CSRF token di tiap request (Django udah built-in), memastikan pakai HTTPS biar data sensitif (password) aman, tidak memberikan error message yang terlalu detail (cukup “username/password salah”).
+
+5. Bagaimana AJAX mempengaruhi pengalaman pengguna (User Experience) pada website?
+=> Website terasa lebih “real-time” dan responsif, kemudian membuat website lebih responsif dan mulus karena bagian-bagian halaman web dapat diperbarui tanpa perlu memuat ulang halaman secara keseluruhan

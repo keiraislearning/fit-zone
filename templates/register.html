@@ -14,7 +14,21 @@
         <p class="text-gray-500">Buat Akunmu di Fit Zone</p>
       </div>
 
-      <!-- Form Errors Display -->
+      <!-- Error Message (Dynamic via AJAX) -->
+      <div id="errorMessage" class="hidden mb-6">
+        <div class="px-4 py-3 rounded text-sm border bg-red-50 border-red-200 text-red-700">
+          <span id="errorText"></span>
+        </div>
+      </div>
+
+      <!-- Success Message (Dynamic via AJAX) -->
+      <div id="successMessage" class="hidden mb-6">
+        <div class="px-4 py-3 rounded text-sm border bg-green-50 border-green-200 text-green-700">
+          <span id="successText"></span>
+        </div>
+      </div>
+
+      <!-- Form Errors Display (Django fallback) -->
       {% if form.non_field_errors %}
         <div class="mb-6">
           {% for error in form.non_field_errors %}
@@ -39,7 +53,7 @@
         </div>
       {% endif %}
 
-      <form method="POST" action="" class="space-y-5">
+      <form method="POST" action="" id="registerForm" class="space-y-5">
         {% csrf_token %}
         
         <div>
@@ -62,6 +76,7 @@
             required 
             class="w-full px-4 py-3 border border-gray-300 rounded focus:outline-none focus:border-green-500 transition duration-200" 
             placeholder="Create a password">
+          <p class="mt-1 text-xs text-gray-500">Minimal 8 karakter</p>
         </div>
 
         <div>
@@ -77,6 +92,7 @@
 
         <button 
           type="submit" 
+          id="submitBtn"
           class="w-full bg-green-600 text-white font-medium py-3 px-4 rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-200">
           Buat Akun
         </button>
@@ -115,4 +131,62 @@
     </div>
   </div>
 </div>
+
+<script>
+  const registerForm = document.getElementById('registerForm');
+  const errorMessage = document.getElementById('errorMessage');
+  const successMessage = document.getElementById('successMessage');
+  const errorText = document.getElementById('errorText');
+  const successText = document.getElementById('successText');
+  const submitBtn = document.getElementById('submitBtn');
+
+  registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Membuat akun...';
+    
+    // Hide previous messages
+    errorMessage.classList.add('hidden');
+    successMessage.classList.add('hidden');
+    
+    const formData = new FormData(registerForm);
+    
+    try {
+      const response = await fetch("{% url 'main:register' %}", {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        }
+      });
+      
+      const data = await response.json();
+      
+      if (data.status) {
+          // Success
+          successText.textContent = data.message + ' Mengalihkan...';
+          successMessage.classList.remove('hidden');
+          showToast('Registrasi Berhasil!', data.message, 'success'); 
+          setTimeout(() => {
+              window.location.href = data.redirect;
+          }, 1500);
+      } else {
+          // Show error
+          errorText.textContent = data.message;
+          errorMessage.classList.remove('hidden');
+          showToast('Registrasi Gagal', data.message, 'error'); 
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Buat Akun';
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      errorText.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+      errorMessage.classList.remove('hidden');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Buat Akun';
+    }
+  });
+</script>
 {% endblock content %}
