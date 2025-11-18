@@ -155,8 +155,14 @@ function buildProductCardElement(item) {
     const category = DOMPurify.sanitize(item.category);
     const thumbnail = item.thumbnail ? DOMPurify.sanitize(item.thumbnail) : null;
     const price = formatPrice(item.price);
+    const is_featured = item.is_featured;  
     const productViews = item.views;
-    const isHot = item.is_product_hot;  
+    const createdAt = DOMPurify.sanitize(new Date(item.created_at).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    }));
+    const isHot = item.is_product_hot;
 
     const thumbnailHtml = thumbnail 
         ? `<img src='${thumbnail}' alt='${name}' class='w-full h-full object-cover'>` 
@@ -167,6 +173,9 @@ function buildProductCardElement(item) {
            </div>`;
     
     const categoryLabel = getReadableCategoryName(category);
+    
+    const featuredLabel = is_featured ? `<span class='inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-800'>⭐ Featured</span>` : '';
+    
     const hotLabel = isHot ? `<span class='inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-red-100 text-red-800'>🔥 Hot</span>` : '';
 
     const editDeleteHtml = CURRENT_USER_ID && item.user_id && Number(CURRENT_USER_ID) === Number(item.user_id)
@@ -183,6 +192,7 @@ function buildProductCardElement(item) {
             <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-green-600 text-white">${categoryLabel}</span>
           </div>
           <div class="absolute top-3 right-3 flex space-x-2">
+            ${featuredLabel}
             ${hotLabel}
           </div>
         </div>

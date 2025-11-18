@@ -1,4 +1,5 @@
 import datetime
+import json
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -12,6 +13,53 @@ from main.models import Product
 from django.utils.html import strip_tags
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+import requests
+
+@csrf_exempt
+def create_product_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        name = strip_tags(data.get("name", ""))  # Strip HTML tags
+        description = strip_tags(data.get("description", ""))  # Strip HTML tags
+        category = data.get("category", "")
+        thumbnail = data.get("thumbnail", "")
+        is_featured = data.get("is_featured", False)
+        user = request.user
+        
+        new_product = Product(
+            name=name, 
+            description=description,
+            category=category,
+            thumbnail=thumbnail,
+            is_featured=is_featured,
+            user=user
+        )
+        new_product.save()
+        
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+
+def proxy_image(request):
+    image_url = request.GET.get('url')
+    if not image_url:
+        return HttpResponse('No URL provided', status=400)
+    
+    try:
+        # Fetch image from external source
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Return the image with proper description type
+        return HttpResponse(
+            response.content,
+            content_type=response.headers.get('Content-Type', 'image/jpeg'),
+            status=response.status_code,
+            reason=response.reason
+        )
+
+    except requests.RequestException as e:
+        return HttpResponse(f'Error fetching image: {str(e)}', status=500)
 
 @csrf_exempt
 @require_POST
@@ -23,6 +71,7 @@ def add_product_entry_ajax(request):
     thumbnail = request.POST.get("thumbnail")
     price = request.POST.get("price")  
     user = request.user
+    is_featured = request.POST.get("is_featured") == "true"
 
     # Validate required fields
     if not name or not description or not category:
@@ -35,7 +84,8 @@ def add_product_entry_ajax(request):
         category=category,
         thumbnail=thumbnail if thumbnail else None,
         price=int(price) if price else 0,  
-        user=user
+        user=user,
+        is_featured=is_featured,
     )
     new_product.save()
 
@@ -68,6 +118,7 @@ def edit_product(request, id):
     category = request.POST.get("category")
     thumbnail = request.POST.get("thumbnail")
     price = request.POST.get("price")
+    is_featured= request.POST.get("is_featured") == "true",
     
     # Update product
     product.name = name
@@ -75,6 +126,7 @@ def edit_product(request, id):
     product.category = category
     product.thumbnail = thumbnail if thumbnail else None
     product.price = int(price) if price else 0
+    product.is_featured = is_featured
     product.save()
     
     return HttpResponse(b"UPDATED", status=200)
@@ -185,7 +237,7 @@ def show_xml_by_id(request, product_id):
    try:
         Product_item = Product.objects.filter(pk=product_id)
         xml_data = serializers.serialize("xml", Product_item)
-        return HttpResponse(xml_data, content_type="application/xml")
+        return HttpResponse(xml_data, description_type="application/xml")
    except Product.DoesNotExist:
        return HttpResponse(status=404)
 
@@ -200,7 +252,9 @@ def show_json_by_id(request, product_id):
             'category': product.category,
             'thumbnail': product.thumbnail,
             'views': product.views,
+            'created_at': product.created_at.isoformat() if product.created_at else None,
             'is_product_hot': product.is_product_hot,
+            'is_featured': product.is_featured,
             'user_id': product.user.id if product.user else None,
             'user_username': product.user.username if product.user else None,
         }
@@ -209,7 +263,16 @@ def show_json_by_id(request, product_id):
         return JsonResponse({'detail': 'Not found'}, status=404)
 
 def show_json(request):
-    product_list = Product.objects.all()
+    filter_type = request.GET.get("filter", "all")
+
+    if filter_type == "my":
+        if request.user.is_authenticated:
+            product_list = Product.objects.filter(user=request.user)
+        else:
+            return JsonResponse([], safe=False)
+    else:
+        product_list = Product.objects.all()
+
     data = [
         {
             'id': str(product.id),
@@ -218,20 +281,23 @@ def show_json(request):
             'category': product.category,
             'thumbnail': product.thumbnail,
             'views': product.views,
-            'price': product.price,  
-            'is_product_hot': product.is_product_hot,  
-            'user_id': product.user.id if product.user else None,  
-            'user_username': product.user.username if product.user else None  
+            'created_at': product.created_at.isoformat() if product.created_at else None,
+            'price': product.price,
+            'is_product_hot': product.is_product_hot,
+            'is_featured': product.is_featured,
+            'user_id': product.user.id if product.user else None,
+            'user_username': product.user.username if product.user else None
         }
         for product in product_list
     ]
 
     return JsonResponse(data, safe=False)
 
+
 def show_xml(request):
      Product_list = Product.objects.all()
      xml_data = serializers.serialize("xml", Product_list)
-     return HttpResponse(xml_data, content_type="application/xml")
+     return HttpResponse(xml_data, description_type="application/xml")
 
 @login_required(login_url='/login')
 def show_main(request):
